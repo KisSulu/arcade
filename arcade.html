@@ -3,215 +3,64 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pixel Invaders</title>
+    <title>Klasszikus Játékok</title>
     <style>
-        /* CSS a játékkörnyezethez és az elemekhez */
         body {
-            background-color: #000;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            min-height: 100vh;
-            margin: 0;
-            color: #fff;
-            font-family: sans-serif;
+            font-family: 'Arial', sans-serif;
+            background-color: #1a1a2e;
+            color: #e4e4f1;
+            text-align: center;
+            padding: 20px;
         }
-        #game-board {
-            width: 400px;
-            height: 500px;
-            background-color: #111;
-            border: 5px solid #0f0; /* Zöld arcade keret */
-            position: relative;
-            overflow: hidden; /* A lövedékek és az ellenségek maradjanak a táblán */
+        h1 {
+            color: #f7b731;
+            border-bottom: 2px solid #f7b731;
+            padding-bottom: 10px;
         }
-        #player {
-            width: 30px;
-            height: 30px;
-            background-color: #00f; /* Kék játékos */
-            position: absolute;
-            bottom: 10px;
-            left: 185px; /* Középre helyezés */
-            clip-path: polygon(0% 100%, 50% 0%, 100% 100%); /* Háromszög forma */
+        .game-list {
+            list-style: none;
+            padding: 0;
+            max-width: 600px;
+            margin: 20px auto;
         }
-        .enemy {
-            width: 20px;
-            height: 20px;
-            background-color: #f00; /* Piros ellenségek */
-            position: absolute;
-            top: 50px;
-            border-radius: 5px;
-        }
-        .bullet {
-            width: 4px;
-            height: 10px;
-            background-color: #0f0; /* Zöld lövedék */
-            position: absolute;
-        }
-        #score-display {
-            font-size: 20px;
-            color: #0f0;
+        .game-list li {
+            background-color: #2c2c54;
             margin-bottom: 10px;
+            padding: 15px;
+            border-radius: 8px;
+            transition: background-color 0.3s ease;
         }
-        #instructions {
-            margin-top: 15px;
-            font-size: 14px;
-            color: #aaa;
+        .game-list li:hover {
+            background-color: #4a4a7c;
+        }
+        .game-list a {
+            text-decoration: none;
+            color: #8c7ae6;
+            font-weight: bold;
+            display: block;
+            font-size: 1.2em;
+        }
+        .game-list a:hover {
+            color: #a491f2;
         }
     </style>
 </head>
 <body>
 
-    <div id="score-display">Pontszám: 0</div>
-    <div id="game-board">
-        <div id="player"></div>
-        </div>
-    <div id="instructions">
-        Mozgás: **Bal nyíl (←)** és **Jobb nyíl (→)** | Lövés: **Szóköz**
-    </div>
+    <h1>🎮 Klasszikus Játékok Lehetőségei 🕹️</h1>
 
-    <script>
-        // Játék logikája JavaScripttel
-        const board = document.getElementById('game-board');
-        const player = document.getElementById('player');
-        const scoreDisplay = document.getElementById('score-display');
-        
-        // Játék állapotok
-        let score = 0;
-        let playerX = 185; // Kezdő X pozíció
-        const playerSpeed = 10;
-        
-        const bulletSpeed = 5;
-        const enemySpeed = 1;
-        
-        let enemies = [];
-        let bullets = [];
+    <p>Kattints a játék nevére, hogy megkeresd az online archívumokban vagy emulátor oldalakon!</p>
 
-        // --- Kezelő funkciók (Input) ---
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'ArrowLeft') {
-                playerX = Math.max(0, playerX - playerSpeed); // Nem mehet ki balra
-            } else if (e.key === 'ArrowRight') {
-                playerX = Math.min(370, playerX + playerSpeed); // Nem mehet ki jobbra (400 - 30)
-            } else if (e.key === ' ') {
-                e.preventDefault(); // Megakadályozza az oldal görgetését
-                createBullet();
-            }
-            player.style.left = `${playerX}px`;
-        });
+    <ul class="game-list">
+        <li><a href="https://www.google.com/search?q=online+játék+Pac-Man" target="_blank">Pac-Man</a></li>
+        <li><a href="https://www.google.com/search?q=online+játék+Donkey+Kong" target="_blank">Donkey Kong</a></li>
+        <li><a href="https://www.google.com/search?q=online+játék+Galaga" target="_blank">Galaga</a></li>
+        <li><a href="https://www.google.com/search?q=online+játék+Galaxian" target="_blank">Galaxian</a></li>
+        <li><a href="https://www.google.com/search?q=online+játék+Super+Mario+Bros" target="_blank">Super Mario Bros.</a></li>
+        <li><a href="https://www.google.com/search?q=online+játék+Mortal+Kombat" target="_blank">Mortal Kombat</a></li>
+    </ul>
 
-        // --- Lövedék kezelés ---
-        function createBullet() {
-            const bullet = document.createElement('div');
-            bullet.classList.add('bullet');
-            
-            // Lövedék pozíciója (a játékos közepéből indul)
-            let bulletX = playerX + 13;
-            let bulletY = 470; 
-
-            bullet.style.left = `${bulletX}px`;
-            bullet.style.top = `${bulletY}px`;
-            
-            board.appendChild(bullet);
-            bullets.push({ element: bullet, x: bulletX, y: bulletY });
-        }
-
-        function updateBullets() {
-            bullets = bullets.filter(bullet => {
-                bullet.y -= bulletSpeed;
-                bullet.element.style.top = `${bullet.y}px`;
-                
-                // Lövedék eltávolítása, ha kimegy a képernyőről
-                return bullet.y > 0;
-            });
-        }
-        
-        // --- Ellenség kezelés ---
-        function createEnemy() {
-            const enemy = document.createElement('div');
-            enemy.classList.add('enemy');
-            
-            // Véletlenszerű X pozíció
-            let enemyX = Math.random() * 380;
-            let enemyY = 10; 
-
-            enemy.style.left = `${enemyX}px`;
-            enemy.style.top = `${enemyY}px`;
-            
-            board.appendChild(enemy);
-            enemies.push({ element: enemy, x: enemyX, y: enemyY });
-        }
-
-        function updateEnemies() {
-            enemies = enemies.filter(enemy => {
-                enemy.y += enemySpeed;
-                enemy.element.style.top = `${enemy.y}px`;
-                
-                // Ellenség eltávolítása, ha eléri a játékost (Játék Vége)
-                if (enemy.y > 450) {
-                    gameOver();
-                    return false; // Eltávolítja az ellenséget a listából
-                }
-                return true;
-            });
-        }
-        
-        // --- Ütközés észlelés (Collision Detection) ---
-        function checkCollisions() {
-            bullets.forEach((bullet, bIndex) => {
-                enemies.forEach((enemy, eIndex) => {
-                    // Egyszerű téglalap ütközés észlelés
-                    if (bullet.x < enemy.x + 20 &&
-                        bullet.x + 4 > enemy.x &&
-                        bullet.y < enemy.y + 20 &&
-                        bullet.y + 10 > enemy.y) 
-                    {
-                        // Ütközés történt!
-                        
-                        // 1. Eltávolítja a lövedéket a képernyőről és a listából
-                        bullet.element.remove();
-                        bullets.splice(bIndex, 1);
-                        
-                        // 2. Eltávolítja az ellenséget
-                        enemy.element.remove();
-                        enemies.splice(eIndex, 1);
-                        
-                        // 3. Pontszám növelése
-                        score += 100;
-                        scoreDisplay.textContent = `Pontszám: ${score}`;
-                    }
-                });
-            });
-        }
-
-        // --- Játék Vége ---
-        function gameOver() {
-            alert(`JÁTÉK VÉGE! Elért pontszám: ${score}. Nyomj OK-ot az újraindításhoz.`);
-            // Újratölti az oldalt, hogy újrainduljon a játék
-            window.location.reload(); 
-        }
-
-        // --- Játék Ciklus (Game Loop) ---
-        let lastTime = 0;
-        function gameLoop(currentTime) {
-            // Frissíti a lövedékeket és az ellenségeket
-            updateBullets();
-            updateEnemies();
-            
-            // Ellenőrzi az ütközéseket
-            checkCollisions();
-
-            // Kérjük a következő képkockát
-            requestAnimationFrame(gameLoop);
-        }
-        
-        // Ellenség létrehozása időzítve
-        setInterval(createEnemy, 1500); // Új ellenség 1.5 másodpercenként
-
-        // Játék indítása
-        requestAnimationFrame(gameLoop);
-
-    </script>
+    <p style="font-size: 0.8em; color: #b1b1c7;">*Ezek a linkek Google keresést indítanak, ami segít megtalálni az online játszható verziókat (például archívumokban vagy emulátor oldalakon).</p>
 
 </body>
 </html>
